@@ -11,10 +11,9 @@ export function TutorialFilter({ onSearch, onFilterDifficulty, onFilterCategory 
   const [categoryPage, setCategoryPage] = useState(1); // Current page
   const [loadingCategories, setLoadingCategories] = useState(false); // Loading state
   const [hasMoreCategories, setHasMoreCategories] = useState(true); // Whether more categories are available
-
-  const categoryDropdownRef = useRef(null); // Ref for the dropdown
-
   const [difficulties, setDifficulty] = useState([]); // List of categories
+  
+  const categoryDropdownRef = useRef(null); // Ref for the dropdown
 
   useEffect(() => {
     async function fetchCategories() {
@@ -39,11 +38,8 @@ export function TutorialFilter({ onSearch, onFilterDifficulty, onFilterCategory 
           });
           setHasMoreCategories(data.data.result.length > 0); // Check if there are more categories
 
-
           const Difficultyresponse = await fetch(`${API_URL}/Type`);
           const Difficultydata = await Difficultyresponse.json();
-          console.log(Difficultydata.data.result);
-
           if (Difficultyresponse.ok) { setDifficulty(Difficultydata.data.result) }
 
         } else {
@@ -55,10 +51,8 @@ export function TutorialFilter({ onSearch, onFilterDifficulty, onFilterCategory 
         setLoadingCategories(false);
       }
     }
-
     fetchCategories();
   }, [categoryPage]);
-
 
   const handleCategoryScroll = () => {
     const dropdown = categoryDropdownRef.current;
@@ -70,7 +64,6 @@ export function TutorialFilter({ onSearch, onFilterDifficulty, onFilterCategory 
       setCategoryPage((prev) => prev + 1); // Load next page when scrolling to the bottom
     }
   };
-
 
   return (
     <div className="space-y-4 md:space-y-0 md:flex md:space-x-4 mb-8">
@@ -96,8 +89,6 @@ export function TutorialFilter({ onSearch, onFilterDifficulty, onFilterCategory 
           )}
         </SelectContent>
       </Select>
-
-
 
       <Select onValueChange={onFilterCategory}>
         <SelectTrigger className="md:w-1/4">

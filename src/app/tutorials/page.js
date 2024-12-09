@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { TutorialCard } from "../components/tutorials/TutorialCard.js";
 import { TutorialFilter } from "../components/tutorials/TutorialFilter.js";
 import API_URL from "../components/apiConfig";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 export default function TutorialsPage() {
     const [search, setSearch] = useState("");
@@ -13,13 +15,17 @@ export default function TutorialsPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // Fetch data
+    useEffect(() => {
+        AOS.init({
+          duration: 1000,
+          once: false, // Ensures animations run on reload
+        });
+      }, []);
+      
     useEffect(() => {
         const fetchData = async () => {
             try {
                 setLoading(true);
-
-                // Fetch tutorials
                 const tutorialsRes = await fetch(`${API_URL}/Tutorials?page=-2`, {
                     method: "GET",
                     headers: { "Content-Type": "application/json" },
@@ -30,10 +36,8 @@ export default function TutorialsPage() {
                 }
 
                 const tutorialsData = await tutorialsRes.json();
-                console.log(tutorialsData.data); // Log the response for debugging
-
                 setTutorials(tutorialsData.data || []);
-                
+
             } catch (err) {
                 console.error(err); // Log the error for debugging
                 setError(err.message || "An error occurred while fetching data.");
@@ -44,7 +48,6 @@ export default function TutorialsPage() {
 
         fetchData();
     }, []);
-
 
     const filteredTutorials = tutorials.filter((tutorial) => {
         const matchesSearch =
@@ -59,24 +62,27 @@ export default function TutorialsPage() {
     });
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            <h1 className="text-4xl font-bold mb-8">Tutorials</h1>
+        <div className="container mx-auto px-4 py-8" data-aos="fade-up">
+            <h1 className="text-4xl font-bold mb-8" data-aos="zoom-in">Tutorials</h1>
 
             {error && <p className="text-red-600">{error}</p>}
 
+            <TutorialFilter
+                onSearch={setSearch}
+                onFilterDifficulty={setDifficulty}
+                onFilterCategory={setCategory}
+            />
             {loading ? (
                 <p>Loading tutorials...</p>
             ) : (
                 <>
-                    <TutorialFilter
-                        onSearch={setSearch}
-                        onFilterDifficulty={setDifficulty}
-                        onFilterCategory={setCategory}
-                    />
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6" data-aos="fade-up"
+                    data-aos-delay="200">
                         {filteredTutorials.length > 0 ? (
                             filteredTutorials.map((tutorial) => (
+                                
                                 <TutorialCard
+                                 data-aos="fade-up" data-aos-delay="300"
                                     key={tutorial._id}
                                     tutorial={{
                                         ...tutorial,
@@ -86,7 +92,7 @@ export default function TutorialsPage() {
                                 />
                             ))
                         ) : (
-                            <p>
+                            <p data-aos="fade-in">
                                 No Tutorials found for "{search}" in "{category}" at "
                                 {difficulty}" level
                             </p>

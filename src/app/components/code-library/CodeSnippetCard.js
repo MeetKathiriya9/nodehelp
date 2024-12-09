@@ -9,7 +9,6 @@ import { tomorrow } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { coy } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useTheme } from "next-themes";
 
-
 export function CodeSnippetCard({ snippet }) {
   const copyCode = () => {
     navigator.clipboard.writeText(snippet.code);
@@ -18,9 +17,8 @@ export function CodeSnippetCard({ snippet }) {
   const { resolvedTheme } = useTheme();
   const syntaxHighlighterStyle = resolvedTheme === "dark" ? tomorrow : coy;
 
-
   return (
-    <Card className="h-fit">
+    <Card className={`h-fit ${resolvedTheme == "dark" ? " border border-gray-600" : ""}`}>
       <CardHeader>
         <div className="flex justify-between items-start">
           <CardTitle className="mb-2">{snippet.title}</CardTitle>
@@ -29,7 +27,7 @@ export function CodeSnippetCard({ snippet }) {
           </Button>
         </div>
         <CardDescription>{snippet.description}</CardDescription>
-        <div className="flex flex-wrap gap-2 mt-2">
+        <div className={`flex flex-wrap gap-2 mt-2 `}>
           {snippet.keywords.map((tag) => (
             <Badge key={tag._id} variant="secondary">
               {tag.name}
@@ -38,7 +36,7 @@ export function CodeSnippetCard({ snippet }) {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="rounded-md overflow-hidden">
+        <div className={`rounded-md overflow-hidden  ${resolvedTheme == "dark" ? "bg-[#191a19]" : "bg-[#f0f0f0]"}` }>
           <SyntaxHighlighter
             language="javascript"
             style={syntaxHighlighterStyle}
@@ -53,8 +51,7 @@ export function CodeSnippetCard({ snippet }) {
               padding: resolvedTheme == "dark" ? '1em' : "0.7em 0em 0.6em",
               overflow: 'auto',
               boxSizing: 'border-box',
-              background: resolvedTheme === 'light' ? 'rgb(253, 253, 253)' : undefined,
-
+              background: resolvedTheme == "dark" ? "bg-[#191a19]" : "bg-[#f0f0f0]"
             }}
           >
             {snippet.codeSnippet}

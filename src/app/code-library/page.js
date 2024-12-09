@@ -6,11 +6,18 @@ import { Input } from "../components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import API_URL from "../components/apiConfig.js";
 import Masonry from "react-masonry-css"; // Import Masonry component
+import AOS from "aos"; // Import AOS
+import "aos/dist/aos.css"; // Import AOS styles
 
 export default function CodeLibraryPage() {
     const [search, setSearch] = useState("");
     const [category, setCategory] = useState("all");
     const [libraries, setLibrary] = useState([]);
+    const [categories, setCategories] = useState([]); // List of categories
+    const [categoryPage, setCategoryPage] = useState(1); // Current page
+    const [loadingCategories, setLoadingCategories] = useState(false); // Loading state
+    const [hasMoreCategories, setHasMoreCategories] = useState(true); // Whether more categories are available
+    const categoryDropdownRef = useRef(null); // Ref for the dropdown
 
     useEffect(() => {
         const fetchData = async () => {
@@ -32,15 +39,6 @@ export default function CodeLibraryPage() {
         };
         fetchData();
     }, []);
-
-
-    const [categories, setCategories] = useState([]); // List of categories
-    const [categoryPage, setCategoryPage] = useState(1); // Current page
-    const [loadingCategories, setLoadingCategories] = useState(false); // Loading state
-    const [hasMoreCategories, setHasMoreCategories] = useState(true); // Whether more categories are available
-
-    const categoryDropdownRef = useRef(null); // Ref for the dropdown
-
 
     useEffect(() => {
         async function fetchCategories() {
@@ -74,10 +72,8 @@ export default function CodeLibraryPage() {
                 setLoadingCategories(false);
             }
         }
-
         fetchCategories();
     }, [categoryPage]);
-
 
     const handleCategoryScroll = () => {
         const dropdown = categoryDropdownRef.current;
@@ -90,8 +86,6 @@ export default function CodeLibraryPage() {
         }
     };
 
-
-
     const filteredSnippets = libraries.filter((snippet) => {
         const matchesSearch = snippet.title?.toLowerCase().includes(search.toLowerCase()) ||
             snippet.description?.toLowerCase().includes(search.toLowerCase());
@@ -100,18 +94,20 @@ export default function CodeLibraryPage() {
         return matchesSearch && matchesCategory;
     });
 
-
     // Masonry Breakpoints
     const breakpointColumnsObj = {
         default: 2, // Default column count
         768: 1,     // Columns for screens smaller than 768px
     };
 
+    useEffect(() => {
+        AOS.init({ duration: 1000, once: true });
+    }, []);
 
     return (
         <div className="container mx-auto px-4 py-8">
-            <h1 className="text-4xl font-bold mb-8">Code Library</h1>
-            <div className="flex flex-col md:flex-row gap-4 mb-8">
+            <h1 className="text-4xl font-bold mb-8" data-aos="fade-down">Code Library</h1>
+            <div className="flex flex-col md:flex-row gap-4 mb-8" data-aos="fade-up" data-aos-delay="200">
                 <Input
                     placeholder="Search code snippets..."
                     onChange={(e) => setSearch(e.target.value)}
@@ -121,22 +117,12 @@ export default function CodeLibraryPage() {
                     <SelectTrigger className="md:w-1/4">
                         <SelectValue placeholder="Category" />
                     </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="all">All Categories</SelectItem>
-                        <SelectItem value="Backend">Backend</SelectItem>
-                        <SelectItem value="Database">Database</SelectItem>
-                    </SelectContent>
-                </Select>
-{/* 
-                <Select onValueChange={setCategory}>
-                    <SelectTrigger className="md:w-1/4">
-                        <SelectValue placeholder="Category" />
-                    </SelectTrigger>
                     <SelectContent
 
                         ref={categoryDropdownRef}
                         onScrollCapture={handleCategoryScroll}
-                        className="max-h-64 overflow-y-auto">
+                        className="max-h-64 overflow-y-auto"
+                    >
 
                         <SelectItem value="all">All Categories</SelectItem>
                         {categories.map((category) => (
@@ -153,24 +139,25 @@ export default function CodeLibraryPage() {
                             </div>
                         )}
                     </SelectContent>
-                </Select> */}
+                </Select>
             </div>
-            {/* <div className="grid grid-cols-2 md:grid-cols-1 gap-6 masonry-container" ref={masonryRef}> */}
 
             <Masonry
                 breakpointCols={breakpointColumnsObj} // Define responsive columns
                 className="my-masonry-grid"
                 columnClassName="my-masonry-grid_column"
+
             >
                 {filteredSnippets?.length > 0 ? (
                     filteredSnippets.map((snippet) => (
-                        <CodeSnippetCard key={snippet._id} snippet={snippet} />
+                        <div key={snippet._id} data-aos="fade-up" data-aos-delay="100" data-aos-offset="50">
+                            <CodeSnippetCard snippet={snippet} />
+                        </div>
                     ))
                 ) : (
-                    <p>No code snippets found.</p>
+                    <p data-aos="fade-in"> No Tutorials found for "{search}" in "{category}"</p>
                 )}
             </Masonry>
-            {/* </div> */}
         </div>
     );
 }

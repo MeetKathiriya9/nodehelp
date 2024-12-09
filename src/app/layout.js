@@ -6,7 +6,7 @@ import Navbar from './components/layout/Navbar.js';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
-  title: 'DevHub - Developer Learning Platform',
+  title: 'NodeHelp - Developer Learning Platform',
   description: 'A comprehensive platform for learning backend development',
 };
 
@@ -16,7 +16,7 @@ export default function RootLayout({ children }) {
       <body className={inter.className}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="dark"
+          defaultTheme="light"
           enableSystem
           disableTransitionOnChange
         >
